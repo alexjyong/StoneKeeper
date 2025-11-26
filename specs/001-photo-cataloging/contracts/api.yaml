@@ -1,0 +1,1045 @@
+openapi: 3.0.3
+info:
+  title: StoneKeeper Cemetery Photo Cataloging API
+  description: |
+    REST API for the StoneKeeper cemetery photo cataloging system.
+    Supports photo uploads with EXIF metadata extraction, search, cemetery organization, and multi-user collaboration.
+
+    **Authentication**: Session-based authentication using HTTP-only cookies.
+
+    **Constitution Compliance**:
+    - Data Integrity First: All timestamps timezone-aware, soft deletes preserve data
+    - Non-Technical User Focus: Clear error messages, intuitive endpoints
+    - Maintainability & Simplicity: RESTful design, standard HTTP methods
+    - Preservation-Grade Documentation: Complete API documentation with examples
+  version: 1.0.0
+  contact:
+    name: StoneKeeper Support
+    email: support@stonekeeper.example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local development server
+  - url: https://api.stonekeeper.example.com/api
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User registration, login, logout
+  - name: Photographs
+    description: Photo upload, retrieval, metadata management
+  - name: Cemeteries
+    description: Cemetery management and organization
+  - name: Sections
+    description: Cemetery section management
+  - name: Plots
+    description: Burial plot management
+  - name: Search
+    description: Search photos, cemeteries, and plots
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: stonekeeper_session
+      description: Session-based authentication using HTTP-only cookies
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type (e.g., "validation_error", "not_found", "unauthorized")
+        message:
+          type: string
+          description: Human-readable error message in plain language
+        details:
+          type: object
+          description: Additional error details (e.g., field validation errors)
+      example:
+        error: validation_error
+        message: The photo file size exceeds the maximum allowed size of 20MB
+        details:
+          field: photo_file
+          max_size_bytes: 20971520
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - full_name
+        - created_at
+      properties:
+        id:
+          type: integer
+          description: Unique user identifier
+        email:
+          type: string
+          format: email
+          description: User email address
+        full_name:
+          type: string
+          description: User's full name
+        is_active:
+          type: boolean
+          description: Whether user account is active
+        created_at:
+          type: string
+          format: date-time
+          description: Account creation timestamp (ISO 8601 with timezone)
+      example:
+        id: 1
+        email: researcher@example.com
+        full_name: Jane Smith
+        is_active: true
+        created_at: "2023-11-26T10:30:00Z"
+
+    Cemetery:
+      type: object
+      required:
+        - id
+        - name
+        - created_at
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          maxLength: 500
+        location_description:
+          type: string
+          description: City, state, country
+        gps_coordinates:
+          $ref: '#/components/schemas/GPSCoordinates'
+        established_year:
+          type: integer
+          minimum: 1600
+          maximum: 2100
+        notes:
+          type: string
+        photo_count:
+          type: integer
+          description: Number of photos in this cemetery
+        section_count:
+          type: integer
+          description: Number of sections in this cemetery
+        last_photo_uploaded:
+          type: string
+          format: date-time
+          description: Timestamp of most recent photo upload
+        created_by:
+          type: integer
+          description: ID of user who created this cemetery
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 1
+        name: Oak Hill Cemetery
+        location_description: Springfield, Illinois, USA
+        gps_coordinates:
+          latitude: 39.7817
+          longitude: -89.6501
+        established_year: 1850
+        notes: Historic cemetery, well maintained
+        photo_count: 245
+        section_count: 12
+        last_photo_uploaded: "2023-11-25T14:30:00Z"
+        created_by: 1
+        created_at: "2023-01-15T10:00:00Z"
+        updated_at: "2023-11-25T14:30:00Z"
+
+    Section:
+      type: object
+      required:
+        - id
+        - cemetery_id
+        - name
+        - created_at
+      properties:
+        id:
+          type: integer
+        cemetery_id:
+          type: integer
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        display_order:
+          type: integer
+          description: Order for displaying in UI (0 = first)
+        photo_count:
+          type: integer
+          description: Number of photos in this section
+        plot_count:
+          type: integer
+          description: Number of plots in this section
+        created_by:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 1
+        cemetery_id: 1
+        name: Section A
+        description: Original section, established 1850
+        display_order: 0
+        photo_count: 45
+        plot_count: 120
+        created_by: 1
+        created_at: "2023-01-20T10:00:00Z"
+        updated_at: "2023-01-20T10:00:00Z"
+
+    Plot:
+      type: object
+      required:
+        - id
+        - section_id
+        - plot_number
+        - created_at
+      properties:
+        id:
+          type: integer
+        section_id:
+          type: integer
+        plot_number:
+          type: string
+          maxLength: 100
+          description: Human-readable plot identifier (e.g., "A-123", "Row 5, Plot 12")
+        row_identifier:
+          type: string
+          maxLength: 100
+        headstone_inscription:
+          type: string
+          description: Transcribed text from headstone
+        burial_date:
+          type: string
+          format: date
+          description: Date of burial if known
+        notes:
+          type: string
+        photo_count:
+          type: integer
+        created_by:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 1
+        section_id: 1
+        plot_number: A-101
+        row_identifier: Row 1
+        headstone_inscription: "John Smith\n1840-1920\nBeloved Father"
+        burial_date: "1920-03-15"
+        notes: Marble headstone, well preserved
+        photo_count: 3
+        created_by: 1
+        created_at: "2023-02-10T12:00:00Z"
+        updated_at: "2023-02-10T12:00:00Z"
+
+    Photograph:
+      type: object
+      required:
+        - id
+        - cemetery_id
+        - file_size_bytes
+        - file_format
+        - uploaded_by
+        - created_at
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+          format: uuid
+        cemetery_id:
+          type: integer
+        section_id:
+          type: integer
+          nullable: true
+        plot_id:
+          type: integer
+          nullable: true
+        file_url:
+          type: string
+          format: uri
+          description: URL to view original photo
+        thumbnail_url:
+          type: string
+          format: uri
+          description: URL to 150x150 thumbnail
+        preview_url:
+          type: string
+          format: uri
+          description: URL to 800x600 preview
+        file_size_bytes:
+          type: integer
+          minimum: 1
+          maximum: 20971520
+        file_format:
+          type: string
+          enum: [JPEG, PNG, TIFF]
+        image_width:
+          type: integer
+        image_height:
+          type: integer
+        exif:
+          $ref: '#/components/schemas/EXIFMetadata'
+        description:
+          type: string
+        photographer_notes:
+          type: string
+        uploaded_by:
+          type: integer
+        uploaded_by_name:
+          type: string
+          description: Full name of photographer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 1
+        uuid: 550e8400-e29b-41d4-a716-446655440000
+        cemetery_id: 1
+        section_id: 1
+        plot_id: 1
+        file_url: /api/photos/1/file
+        thumbnail_url: /api/photos/1/thumbnail
+        preview_url: /api/photos/1/preview
+        file_size_bytes: 5242880
+        file_format: JPEG
+        image_width: 4032
+        image_height: 3024
+        exif:
+          date_taken: "2023-11-15T14:30:00Z"
+          gps_coordinates:
+            latitude: 39.7817
+            longitude: -89.6501
+          camera_make: Apple
+          camera_model: iPhone 14 Pro
+          focal_length: 6.9
+          aperture: f/1.8
+          shutter_speed: 1/1000
+          iso: 100
+        description: Front view of Smith family headstone
+        photographer_notes: Clear weather, good lighting
+        uploaded_by: 1
+        uploaded_by_name: Jane Smith
+        created_at: "2023-11-15T15:00:00Z"
+        updated_at: "2023-11-15T15:00:00Z"
+
+    EXIFMetadata:
+      type: object
+      properties:
+        date_taken:
+          type: string
+          format: date-time
+          description: Date and time photo was taken (from EXIF)
+        gps_coordinates:
+          $ref: '#/components/schemas/GPSCoordinates'
+        camera_make:
+          type: string
+        camera_model:
+          type: string
+        focal_length:
+          type: number
+          format: float
+          description: Focal length in millimeters
+        aperture:
+          type: string
+          description: Aperture value (e.g., "f/2.8")
+        shutter_speed:
+          type: string
+          description: Shutter speed (e.g., "1/1000")
+        iso:
+          type: integer
+          description: ISO sensitivity
+
+    GPSCoordinates:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+      example:
+        latitude: 39.7817
+        longitude: -89.6501
+
+    PaginatedResponse:
+      type: object
+      required:
+        - items
+        - total
+        - page
+        - page_size
+      properties:
+        items:
+          type: array
+          items: {}
+        total:
+          type: integer
+          description: Total number of items matching query
+        page:
+          type: integer
+          description: Current page number (1-indexed)
+        page_size:
+          type: integer
+          description: Number of items per page
+        total_pages:
+          type: integer
+          description: Total number of pages
+
+paths:
+  # ===== AUTHENTICATION =====
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register new user account
+      description: Create a new cemetery researcher account
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - full_name
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: Must be at least 8 characters
+                full_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+              example:
+                email: researcher@example.com
+                password: SecurePassword123
+                full_name: Jane Smith
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error (e.g., weak password, invalid email)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login to account
+      description: Authenticate user and create session
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+              example:
+                email: researcher@example.com
+                password: SecurePassword123
+      responses:
+        '200':
+          description: Login successful
+          headers:
+            Set-Cookie:
+              description: Session cookie
+              schema:
+                type: string
+                example: stonekeeper_session=abc123; Path=/; HttpOnly; Secure; SameSite=Lax
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout from account
+      description: Invalidate current session
+      operationId: logout
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get current user
+      description: Retrieve information about currently authenticated user
+      operationId: getCurrentUser
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ===== PHOTOGRAPHS =====
+  /photos:
+    get:
+      tags: [Photographs]
+      summary: List photographs
+      description: Get paginated list of photographs with optional filtering
+      operationId: listPhotographs
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: cemetery_id
+          in: query
+          schema:
+            type: integer
+        - name: section_id
+          in: query
+          schema:
+            type: integer
+        - name: plot_id
+          in: query
+          schema:
+            type: integer
+        - name: uploaded_by
+          in: query
+          schema:
+            type: integer
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter photos taken on or after this date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter photos taken on or before this date
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: List of photographs
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Photograph'
+
+    post:
+      tags: [Photographs]
+      summary: Upload photograph
+      description: Upload cemetery photograph with automatic EXIF extraction
+      operationId: uploadPhotograph
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - photo_file
+                - cemetery_id
+              properties:
+                photo_file:
+                  type: string
+                  format: binary
+                  description: Photo file (JPEG, PNG, or TIFF, max 20MB)
+                cemetery_id:
+                  type: integer
+                section_id:
+                  type: integer
+                plot_id:
+                  type: integer
+                description:
+                  type: string
+                photographer_notes:
+                  type: string
+      responses:
+        '201':
+          description: Photo uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photograph'
+        '400':
+          description: Validation error (e.g., file too large, unsupported format)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /photos/{photo_id}:
+    get:
+      tags: [Photographs]
+      summary: Get photograph details
+      description: Retrieve full metadata for a specific photograph
+      operationId: getPhotograph
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Photograph details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photograph'
+        '404':
+          description: Photograph not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      tags: [Photographs]
+      summary: Update photograph metadata
+      description: Update user-provided metadata (description, notes, cemetery associations)
+      operationId: updatePhotograph
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                section_id:
+                  type: integer
+                  nullable: true
+                plot_id:
+                  type: integer
+                  nullable: true
+                description:
+                  type: string
+                photographer_notes:
+                  type: string
+      responses:
+        '200':
+          description: Photo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photograph'
+        '404':
+          description: Photograph not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags: [Photographs]
+      summary: Delete photograph
+      description: Soft delete photograph (preserves original file)
+      operationId: deletePhotograph
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Photo deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Photograph not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /photos/{photo_id}/file:
+    get:
+      tags: [Photographs]
+      summary: Download original photo file
+      description: Download original photograph with EXIF metadata intact
+      operationId: downloadPhotograph
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Photo file
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/tiff:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Photograph not found
+
+  /photos/{photo_id}/thumbnail:
+    get:
+      tags: [Photographs]
+      summary: Get photo thumbnail
+      description: Get 150x150 thumbnail for gallery display
+      operationId: getPhotoThumbnail
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Thumbnail image
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+
+  /photos/{photo_id}/preview:
+    get:
+      tags: [Photographs]
+      summary: Get photo preview
+      description: Get 800x600 preview for detail page display
+      operationId: getPhotoPreview
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Preview image
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+
+  # ===== CEMETERIES =====
+  /cemeteries:
+    get:
+      tags: [Cemeteries]
+      summary: List cemeteries
+      description: Get paginated list of cemeteries with statistics
+      operationId: listCemeteries
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search cemetery names
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of cemeteries
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Cemetery'
+
+    post:
+      tags: [Cemeteries]
+      summary: Create cemetery
+      description: Add a new cemetery to the catalog
+      operationId: createCemetery
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 500
+                location_description:
+                  type: string
+                gps_coordinates:
+                  $ref: '#/components/schemas/GPSCoordinates'
+                established_year:
+                  type: integer
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Cemetery created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cemetery'
+
+  /cemeteries/{cemetery_id}:
+    get:
+      tags: [Cemeteries]
+      summary: Get cemetery details
+      description: Retrieve full cemetery information with statistics
+      operationId: getCemetery
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: cemetery_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cemetery details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cemetery'
+
+  # ===== SEARCH =====
+  /search:
+    get:
+      tags: [Search]
+      summary: Search across all content
+      description: Search photographs, cemeteries, and plots by name, location, date range, and photographer
+      operationId: search
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Search query
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [all, photos, cemeteries, plots]
+            default: all
+        - name: cemetery_id
+          in: query
+          schema:
+            type: integer
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: uploaded_by
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  photos:
+                    $ref: '#/components/schemas/PaginatedResponse'
+                  cemeteries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cemetery'
+                  plots:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Plot'

@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: stonekeeper-postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: stonekeeper
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_user
+      - db_password
+    networks:
+      - stonekeeper-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: stonekeeper-backend
+    volumes:
+      - photo-storage:/app/photos
+    environment:
+      DATABASE_URL: postgresql://stonekeeper_user:password@postgres:5432/stonekeeper
+      UPLOAD_DIR: /app/photos
+      SESSION_SECRET_FILE: /run/secrets/session_secret
+    secrets:
+      - db_password
+      - session_secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - stonekeeper-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: stonekeeper-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - stonekeeper-net
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+    driver: local
+  photo-storage:
+    driver: local
+
+secrets:
+  db_user:
+    file: ./secrets/db_user.txt
+  db_password:
+    file: ./secrets/db_password.txt
+  session_secret:
+    file: ./secrets/session_secret.txt
+
+networks:
+  stonekeeper-net:
+    driver: bridge
