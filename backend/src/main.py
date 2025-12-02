@@ -150,12 +150,14 @@ async def root() -> dict:
 # API Routers
 # =============================================================================
 
-# API routers will be included here as they are created
-# Example:
-# from src.api import auth, cemeteries, photos, search
+from src.api import cemeteries, photos
+
+app.include_router(cemeteries.router, prefix="/api/cemeteries", tags=["Cemeteries"])
+app.include_router(photos.router, prefix="/api/photos", tags=["Photos"])
+
+# Additional routers will be added as they are created:
+# from src.api import auth, search
 # app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
-# app.include_router(cemeteries.router, prefix="/api/cemeteries", tags=["Cemeteries"])
-# app.include_router(photos.router, prefix="/api/photos", tags=["Photos"])
 # app.include_router(search.router, prefix="/api/search", tags=["Search"])
 
 

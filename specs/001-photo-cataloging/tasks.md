@@ -79,48 +79,48 @@
 
 ### Implementation for User Story 1
 
-- [ ] T036 [P] [US1] Create Cemetery model in backend/src/models/cemetery.py with gps_location as GEOGRAPHY type
-- [ ] T037 [P] [US1] Create Section model in backend/src/models/section.py
-- [ ] T038 [P] [US1] Create Plot model in backend/src/models/plot.py
-- [ ] T039 [P] [US1] Create Photograph model in backend/src/models/photograph.py with EXIF fields and file paths
-- [ ] T040 [P] [US1] Create Cemetery schema in backend/src/schemas/cemetery.py (CemeteryCreate, CemeteryResponse with GPSCoordinates)
-- [ ] T041 [P] [US1] Create Section schema in backend/src/schemas/section.py
-- [ ] T042 [P] [US1] Create Plot schema in backend/src/schemas/plot.py
-- [ ] T043 [P] [US1] Create Photograph schema in backend/src/schemas/photograph.py with EXIFMetadata nested schema
-- [ ] T044 [US1] Create EXIFService in backend/src/services/exif_service.py to extract metadata using Pillow and piexif (date_taken, GPS coordinates, camera make/model, focal length, aperture, shutter speed, ISO, image dimensions)
-- [ ] T045 [US1] Add thumbnail generation method to EXIFService to create 150x150 thumbnail and 800x600 preview using Pillow LANCZOS resampling
-- [ ] T046 [US1] Create PhotoStorageService in backend/src/services/photo_service.py to save files to /app/photos/{year}/{month}/{uuid}.{ext} structure using UUID for filenames
-- [ ] T047 [US1] Add save_with_thumbnails method to PhotoStorageService to save original, thumbnail, and preview
-- [ ] T048 [US1] Create CemeteryService in backend/src/services/cemetery_service.py with create, get, list, update, delete (soft) methods
-- [ ] T049 [US1] Add GPS coordinate normalization to CemeteryService to convert to decimal degrees and create PostGIS POINT
-- [ ] T050 [US1] Create POST /api/cemeteries endpoint in backend/src/api/cemeteries.py to create cemetery with optional GPS coordinates
-- [ ] T051 [US1] Create GET /api/cemeteries endpoint in backend/src/api/cemeteries.py with pagination and search by name
-- [ ] T052 [US1] Create GET /api/cemeteries/{id} endpoint in backend/src/api/cemeteries.py to retrieve cemetery with statistics (photo_count, section_count)
-- [ ] T053 [US1] Create POST /api/photos endpoint in backend/src/api/photos.py to handle multipart upload, extract EXIF, generate thumbnails, save to storage, create database record
-- [ ] T054 [US1] Add file validation to POST /api/photos: check file size <=20MB, format in [JPEG, PNG, TIFF], prevent path traversal
-- [ ] T055 [US1] Add EXIF extraction to POST /api/photos: call EXIFService, handle photos without EXIF gracefully, store extracted metadata
-- [ ] T056 [US1] Create GET /api/photos/{id} endpoint in backend/src/api/photos.py to retrieve photo metadata
-- [ ] T057 [US1] Create GET /api/photos/{id}/file endpoint to serve original file with appropriate Content-Type header
-- [ ] T058 [US1] Create GET /api/photos/{id}/thumbnail endpoint to serve 150x150 JPEG thumbnail
-- [ ] T059 [US1] Create GET /api/photos/{id}/preview endpoint to serve 800x600 JPEG preview
-- [ ] T060 [P] [US1] Create Cemetery TypeScript interface in frontend/src/types/index.ts
-- [ ] T061 [P] [US1] Create Section, Plot, Photograph, EXIFMetadata TypeScript interfaces in frontend/src/types/index.ts
-- [ ] T062 [P] [US1] Add cemetery API methods to frontend/src/services/api.ts (createCemetery, getCemeteries, getCemetery)
-- [ ] T063 [P] [US1] Add photo API methods to frontend/src/services/api.ts (uploadPhoto, getPhoto, getPhotoFile, getPhotoThumbnail, getPhotoPreview)
-- [ ] T064 [US1] Create CemeteryForm component in frontend/src/components/CemeteryForm/index.tsx with name, location, GPS coordinates, established year, notes fields
-- [ ] T065 [US1] Add GPS coordinate input with validation (latitude -90 to 90, longitude -180 to 180) to CemeteryForm
-- [ ] T066 [US1] Create PhotoUpload component in frontend/src/components/PhotoUpload/index.tsx with drag-and-drop file input, file validation (size, format), progress bar
-- [ ] T067 [US1] Add cemetery selector dropdown to PhotoUpload component to associate photo with cemetery
-- [ ] T068 [US1] Add optional section and plot selectors to PhotoUpload component
-- [ ] T069 [US1] Add description and notes text areas to PhotoUpload component
-- [ ] T070 [US1] Implement upload progress tracking in PhotoUpload using Axios upload progress events
-- [ ] T071 [US1] Create EXIFDisplay component in frontend/src/components/EXIFDisplay/index.tsx to show extracted metadata (date, GPS, camera info) in readable format
-- [ ] T072 [US1] Create PhotoDetail component in frontend/src/components/PhotoDetail/index.tsx to display full-size image with complete metadata
-- [ ] T073 [US1] Create UploadPage in frontend/src/pages/UploadPage.tsx with CemeteryForm and PhotoUpload components
-- [ ] T074 [US1] Add form submission handling to UploadPage: create cemetery if new, upload photo, display success/error messages
-- [ ] T075 [US1] Add error handling to UploadPage for file too large (>20MB), unsupported format, network errors with plain-language messages
-- [ ] T076 [US1] Create HomePage in frontend/src/pages/HomePage.tsx with recent uploads gallery and quick actions (upload photo, add cemetery)
-- [ ] T077 [US1] Add routing for /upload, /home, /cemeteries to frontend/src/App.tsx
+- [x] T036 [P] [US1] Create Cemetery model in backend/src/models/cemetery.py with gps_location as GEOGRAPHY type
+- [x] T037 [P] [US1] Create Section model in backend/src/models/section.py
+- [x] T038 [P] [US1] Create Plot model in backend/src/models/plot.py
+- [x] T039 [P] [US1] Create Photograph model in backend/src/models/photograph.py with EXIF fields and file paths
+- [x] T040 [P] [US1] Create Cemetery schema in backend/src/schemas/cemetery.py (CemeteryCreate, CemeteryResponse with GPSCoordinates)
+- [x] T041 [P] [US1] Create Section schema in backend/src/schemas/section.py
+- [x] T042 [P] [US1] Create Plot schema in backend/src/schemas/plot.py
+- [x] T043 [P] [US1] Create Photograph schema in backend/src/schemas/photograph.py with EXIFMetadata nested schema
+- [x] T044 [US1] Create EXIFService in backend/src/services/exif_service.py to extract metadata using Pillow and piexif (date_taken, GPS coordinates, camera make/model, focal length, aperture, shutter speed, ISO, image dimensions)
+- [x] T045 [US1] Add thumbnail generation method to EXIFService to create 150x150 thumbnail and 800x600 preview using Pillow LANCZOS resampling
+- [x] T046 [US1] Create PhotoStorageService in backend/src/services/photo_service.py to save files to /app/photos/{year}/{month}/{uuid}.{ext} structure using UUID for filenames
+- [x] T047 [US1] Add save_with_thumbnails method to PhotoStorageService to save original, thumbnail, and preview
+- [x] T048 [US1] Create CemeteryService in backend/src/services/cemetery_service.py with create, get, list, update, delete (soft) methods
+- [x] T049 [US1] Add GPS coordinate normalization to CemeteryService to convert to decimal degrees and create PostGIS POINT
+- [x] T050 [US1] Create POST /api/cemeteries endpoint in backend/src/api/cemeteries.py to create cemetery with optional GPS coordinates
+- [x] T051 [US1] Create GET /api/cemeteries endpoint in backend/src/api/cemeteries.py with pagination and search by name
+- [x] T052 [US1] Create GET /api/cemeteries/{id} endpoint in backend/src/api/cemeteries.py to retrieve cemetery with statistics (photo_count, section_count)
+- [x] T053 [US1] Create POST /api/photos endpoint in backend/src/api/photos.py to handle multipart upload, extract EXIF, generate thumbnails, save to storage, create database record
+- [x] T054 [US1] Add file validation to POST /api/photos: check file size <=20MB, format in [JPEG, PNG, TIFF], prevent path traversal
+- [x] T055 [US1] Add EXIF extraction to POST /api/photos: call EXIFService, handle photos without EXIF gracefully, store extracted metadata
+- [x] T056 [US1] Create GET /api/photos/{id} endpoint in backend/src/api/photos.py to retrieve photo metadata
+- [x] T057 [US1] Create GET /api/photos/{id}/file endpoint to serve original file with appropriate Content-Type header
+- [x] T058 [US1] Create GET /api/photos/{id}/thumbnail endpoint to serve 150x150 JPEG thumbnail
+- [x] T059 [US1] Create GET /api/photos/{id}/preview endpoint to serve 800x600 JPEG preview
+- [x] T060 [P] [US1] Create Cemetery TypeScript interface in frontend/src/types/index.ts
+- [x] T061 [P] [US1] Create Section, Plot, Photograph, EXIFMetadata TypeScript interfaces in frontend/src/types/index.ts
+- [x] T062 [P] [US1] Add cemetery API methods to frontend/src/services/api.ts (createCemetery, getCemeteries, getCemetery)
+- [x] T063 [P] [US1] Add photo API methods to frontend/src/services/api.ts (uploadPhoto, getPhoto, getPhotoFile, getPhotoThumbnail, getPhotoPreview)
+- [x] T064 [US1] Create CemeteryForm component in frontend/src/components/CemeteryForm/index.tsx with name, location, GPS coordinates, established year, notes fields
+- [x] T065 [US1] Add GPS coordinate input with validation (latitude -90 to 90, longitude -180 to 180) to CemeteryForm
+- [x] T066 [US1] Create PhotoUpload component in frontend/src/components/PhotoUpload/index.tsx with drag-and-drop file input, file validation (size, format), progress bar
+- [x] T067 [US1] Add cemetery selector dropdown to PhotoUpload component to associate photo with cemetery
+- [x] T068 [US1] Add optional section and plot selectors to PhotoUpload component
+- [x] T069 [US1] Add description and notes text areas to PhotoUpload component
+- [x] T070 [US1] Implement upload progress tracking in PhotoUpload using Axios upload progress events
+- [x] T071 [US1] Create EXIFDisplay component in frontend/src/components/EXIFDisplay/index.tsx to show extracted metadata (date, GPS, camera info) in readable format
+- [x] T072 [US1] Create PhotoDetail component in frontend/src/components/PhotoDetail/index.tsx to display full-size image with complete metadata
+- [x] T073 [US1] Create UploadPage in frontend/src/pages/UploadPage.tsx with CemeteryForm and PhotoUpload components
+- [x] T074 [US1] Add form submission handling to UploadPage: create cemetery if new, upload photo, display success/error messages
+- [x] T075 [US1] Add error handling to UploadPage for file too large (>20MB), unsupported format, network errors with plain-language messages
+- [x] T076 [US1] Create HomePage in frontend/src/pages/HomePage.tsx with recent uploads gallery and quick actions (upload photo, add cemetery)
+- [x] T077 [US1] Add routing for /upload, /home, /cemeteries to frontend/src/App.tsx
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently - researchers can upload photos with EXIF extraction and create cemeteries
 
