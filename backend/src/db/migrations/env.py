@@ -21,7 +21,10 @@ if config.config_file_name is not None:
 
 # Import all models here to ensure they are registered with SQLAlchemy metadata
 # This is crucial for autogenerate to detect model changes
-from src.db.base import Base  # noqa: E402
+from src.db.base import Base, import_models  # noqa: E402
+
+# Import all models to register them with Base.metadata
+import_models()
 
 # Set target_metadata for autogenerate support
 target_metadata = Base.metadata

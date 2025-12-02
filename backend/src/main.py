@@ -175,6 +175,10 @@ async def startup_event():
     print(f"Starting {APP_NAME} v{APP_VERSION}")
     print(f"API documentation available at /api/docs")
 
+    # Import all models to ensure they're registered with SQLAlchemy
+    from src.db.base import import_models
+    import_models()
+
     # Database initialization will be added here
     # (See Phase 7 / User Story 5 for database initialization)
 

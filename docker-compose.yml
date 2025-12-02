@@ -30,10 +30,15 @@ services:
     volumes:
       - photo-storage:/app/photos
     environment:
-      DATABASE_URL: postgresql://stonekeeper_user:password@postgres:5432/stonekeeper
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: stonekeeper
+      DATABASE_USER_FILE: /run/secrets/db_user
+      DATABASE_PASSWORD_FILE: /run/secrets/db_password
       UPLOAD_DIR: /app/photos
       SESSION_SECRET_FILE: /run/secrets/session_secret
     secrets:
+      - db_user
       - db_password
       - session_secret
     depends_on:

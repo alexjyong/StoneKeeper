@@ -4,7 +4,6 @@
  * Allows users to upload cemetery photos with metadata.
  */
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import CemeteryForm from '../components/CemeteryForm';
 import PhotoUpload from '../components/PhotoUpload';
 import { getCemeteries, createCemetery } from '../services/api';
@@ -19,7 +18,6 @@ import './UploadPage.css';
  * Per Constitution Principle II: User-friendly with clear error messages.
  */
 const UploadPage: React.FC = () => {
-  const navigate = useNavigate();
 
   const [cemeteries, setCemeteries] = useState<Cemetery[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,15 +68,15 @@ const UploadPage: React.FC = () => {
   /**
    * Handle photo upload success.
    */
-  const handleUploadSuccess = (photo: Photograph) => {
+  const handleUploadSuccess = (_photo: Photograph) => {
     setSuccess('Photo uploaded successfully! EXIF data has been extracted.');
     setError(null);
 
     // Clear success message after 5 seconds
     setTimeout(() => setSuccess(null), 5000);
 
-    // Optionally navigate to photo detail
-    // navigate(`/photos/${photo.id}`);
+    // Future enhancement: navigate to photo detail page
+    // navigate(`/photos/${_photo.id}`);
   };
 
   /**
