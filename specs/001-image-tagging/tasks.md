@@ -29,9 +29,9 @@ description: "Task list for image upload and tag search implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project directory structure (stonekeeper/, templates/, static/, uploads/)
-- [ ] T002 Install Flask dependency via pip
-- [ ] T003 [P] Create .gitignore file to exclude stonekeeper/uploads/ and *.db files
+- [x] T001 Create project directory structure (stonekeeper/, templates/, static/, uploads/)
+- [x] T002 Install Flask dependency via pip
+- [x] T003 [P] Create .gitignore file to exclude stonekeeper/uploads/ and *.db files
 
 ---
 
@@ -41,11 +41,11 @@ description: "Task list for image upload and tag search implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Implement database initialization with schema in stonekeeper/database.py
-- [ ] T005 [P] Create Flask app skeleton with configuration in stonekeeper/app.py
-- [ ] T006 [P] Implement tag normalization helper function in stonekeeper/database.py
-- [ ] T007 [P] Implement file validation helper (allowed_file) in stonekeeper/app.py
-- [ ] T008 Configure Flask app settings (MAX_CONTENT_LENGTH, uploads folder) in stonekeeper/app.py
+- [x] T004 Implement database initialization with schema in stonekeeper/database.py
+- [x] T005 [P] Create Flask app skeleton with configuration in stonekeeper/app.py
+- [x] T006 [P] Implement tag normalization helper function in stonekeeper/database.py
+- [x] T007 [P] Implement file validation helper (allowed_file) in stonekeeper/app.py
+- [x] T008 Configure Flask app settings (MAX_CONTENT_LENGTH, uploads folder) in stonekeeper/app.py
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -59,13 +59,13 @@ description: "Task list for image upload and tag search implementation"
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Implement GET /upload route to display upload form in stonekeeper/app.py
-- [ ] T010 [US1] Implement POST /upload route with file upload handling in stonekeeper/app.py
-- [ ] T011 [US1] Implement save_image function with tag normalization in stonekeeper/database.py
-- [ ] T012 [US1] Create upload.html template with file input and tag input fields in stonekeeper/templates/upload.html
-- [ ] T013 [US1] Add upload form validation (file required, type check) in stonekeeper/app.py
-- [ ] T014 [US1] Add success and error message display to upload.html template
-- [ ] T015 [US1] Implement secure filename generation with timestamp in stonekeeper/app.py
+- [x] T009 [US1] Implement GET /upload route to display upload form in stonekeeper/app.py
+- [x] T010 [US1] Implement POST /upload route with file upload handling in stonekeeper/app.py
+- [x] T011 [US1] Implement save_image function with tag normalization in stonekeeper/database.py
+- [x] T012 [US1] Create upload.html template with file input and tag input fields in stonekeeper/templates/upload.html
+- [x] T013 [US1] Add upload form validation (file required, type check) in stonekeeper/app.py
+- [x] T014 [US1] Add success and error message display to upload.html template
+- [x] T015 [US1] Implement secure filename generation with timestamp in stonekeeper/app.py
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently. User can upload images with tags and see success confirmation.
 
@@ -79,13 +79,13 @@ description: "Task list for image upload and tag search implementation"
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Implement GET /search route with optional tag query parameter in stonekeeper/app.py
-- [ ] T017 [US2] Implement search_images_by_tag function with LIKE query in stonekeeper/database.py
-- [ ] T018 [US2] Create search.html template with search form in stonekeeper/templates/search.html
-- [ ] T019 [US2] Add results display section to search.html with image grid layout
-- [ ] T020 [US2] Implement GET /uploads/<filename> route to serve uploaded images in stonekeeper/app.py
-- [ ] T021 [US2] Add empty search query handling (show all or show none) in stonekeeper/app.py
-- [ ] T022 [US2] Add "no results found" message display to search.html template
+- [x] T016 [US2] Implement GET /search route with optional tag query parameter in stonekeeper/app.py
+- [x] T017 [US2] Implement search_images_by_tag function with LIKE query in stonekeeper/database.py
+- [x] T018 [US2] Create search.html template with search form in stonekeeper/templates/search.html
+- [x] T019 [US2] Add results display section to search.html with image grid layout
+- [x] T020 [US2] Implement GET /uploads/<filename> route to serve uploaded images in stonekeeper/app.py
+- [x] T021 [US2] Add empty search query handling (show all or show none) in stonekeeper/app.py
+- [x] T022 [US2] Add "no results found" message display to search.html template
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently. Users can upload images and search for them by tag.
 
@@ -99,11 +99,11 @@ description: "Task list for image upload and tag search implementation"
 
 ### Implementation for User Story 3
 
-- [ ] T023 [US3] Implement GET /tags route in stonekeeper/app.py
-- [ ] T024 [US3] Implement get_tag_summary function with aggregation logic in stonekeeper/database.py
-- [ ] T025 [US3] Create tags.html template with tag list display in stonekeeper/templates/tags.html
-- [ ] T026 [US3] Add sorting to tag summary (by count descending) in stonekeeper/database.py
-- [ ] T027 [US3] Add "no tags yet" message for empty database to tags.html template
+- [x] T023 [US3] Implement GET /tags route in stonekeeper/app.py
+- [x] T024 [US3] Implement get_tag_summary function with aggregation logic in stonekeeper/database.py
+- [x] T025 [US3] Create tags.html template with tag list display in stonekeeper/templates/tags.html
+- [x] T026 [US3] Add sorting to tag summary (by count descending) in stonekeeper/database.py
+- [x] T027 [US3] Add "no tags yet" message for empty database to tags.html template
 
 **Checkpoint**: All user stories should now be independently functional. Complete POC with upload, search, and tag summary features.
 
@@ -113,12 +113,12 @@ description: "Task list for image upload and tag search implementation"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T028 [P] Create basic CSS styling for consistent layout in stonekeeper/static/style.css
-- [ ] T029 [P] Add navigation links between pages (upload, search, tags) to all templates
-- [ ] T030 Add GET / route that redirects to /upload in stonekeeper/app.py
-- [ ] T031 [P] Add error handlers for 404, 413, and 500 in stonekeeper/app.py
+- [x] T028 [P] Create basic CSS styling for consistent layout in stonekeeper/static/style.css
+- [x] T029 [P] Add navigation links between pages (upload, search, tags) to all templates
+- [x] T030 Add GET / route that redirects to /upload in stonekeeper/app.py
+- [x] T031 [P] Add error handlers for 404, 413, and 500 in stonekeeper/app.py
 - [ ] T032 Run manual testing validation per quickstart.md test scenarios
-- [ ] T033 [P] Add helpful comments to code explaining tag normalization and LIKE query limitations
+- [x] T033 [P] Add helpful comments to code explaining tag normalization and LIKE query limitations
 
 ---
 

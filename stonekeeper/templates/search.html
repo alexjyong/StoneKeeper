@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Images - StoneKeeper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>StoneKeeper</h1>
+            <p class="subtitle">Cemetery Photograph Cataloging</p>
+        </header>
+
+        <nav>
+            <a href="{{ url_for('upload') }}">Upload</a>
+            <a href="{{ url_for('search') }}" class="active">Search</a>
+            <a href="{{ url_for('tags') }}">Tag Summary</a>
+        </nav>
+
+        <main>
+            <h2>Search Images by Tag</h2>
+
+            <form action="{{ url_for('search') }}" method="GET" class="search-form">
+                <div class="form-group">
+                    <input type="text"
+                           id="tag"
+                           name="tag"
+                           placeholder="Enter tag to search (e.g., Smith)"
+                           value="{{ query if query else '' }}"
+                           autofocus>
+                    <button type="submit" class="btn-primary">Search</button>
+                </div>
+                <small>Search is case-insensitive</small>
+            </form>
+
+            {% if query %}
+                <div class="search-results">
+                    {% if results and result_count > 0 %}
+                        <h3>Found {{ result_count }} image(s) for "{{ query }}"</h3>
+
+                        <div class="image-grid">
+                            {% for image in results %}
+                                <div class="image-card">
+                                    <a href="{{ url_for('uploaded_file', filename=image.filepath.split('/')[-1]) }}" target="_blank">
+                                        <img src="{{ url_for('uploaded_file', filename=image.filepath.split('/')[-1]) }}"
+                                             alt="{{ image.filename }}">
+                                    </a>
+                                    <div class="image-info">
+                                        <p class="filename">{{ image.filename }}</p>
+                                        <p class="upload-date">Uploaded: {{ image.upload_date[:10] }}</p>
+                                        {% if image.tags %}
+                                            <p class="tags">
+                                                <strong>Tags:</strong>
+                                                {% for tag in image.tags.split(',') %}
+                                                    <span class="tag">{{ tag }}</span>
+                                                {% endfor %}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="message info">
+                            No images found for tag "{{ query }}". Try a different tag or check the <a href="{{ url_for('tags') }}">tag summary</a> for available tags.
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="help-text">
+                    <h3>How to search:</h3>
+                    <ul>
+                        <li>Enter a tag name in the search box above</li>
+                        <li>Search is case-insensitive (e.g., "smith" matches "Smith")</li>
+                        <li>View all available tags on the <a href="{{ url_for('tags') }}">Tag Summary</a> page</li>
+                        <li>Upload new images on the <a href="{{ url_for('upload') }}">Upload</a> page</li>
+                    </ul>
+                </div>
+            {% endif %}
+        </main>
+
+        <footer>
+            <p>&copy; 2025 StoneKeeper - Cemetery Photo Cataloging POC</p>
+        </footer>
+    </div>
+</body>
+</html>
