@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image - StoneKeeper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>StoneKeeper</h1>
+            <p class="subtitle">Cemetery Photograph Cataloging</p>
+        </header>
+
+        <nav>
+            <a href="{{ url_for('upload') }}" class="active">Upload</a>
+            <a href="{{ url_for('search') }}">Search</a>
+            <a href="{{ url_for('tags') }}">Tag Summary</a>
+        </nav>
+
+        <main>
+            <h2>Upload Image with Tags</h2>
+
+            {% if success_message %}
+            <div class="message success">
+                {{ success_message }}
+            </div>
+            {% endif %}
+
+            {% if error_message %}
+            <div class="message error">
+                {{ error_message }}
+            </div>
+            {% endif %}
+
+            <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="file">Select Image File:</label>
+                    <input type="file" id="file" name="file" accept="image/*" required>
+                    <small>Allowed formats: PNG, JPG, JPEG, GIF (max 10MB)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="tags">Tags (comma-separated):</label>
+                    <input type="text" id="tags" name="tags" placeholder="e.g., Smith, grave, 1920s">
+                    <small>Optional: Enter descriptive tags separated by commas</small>
+                </div>
+
+                <button type="submit" class="btn-primary">Upload Image</button>
+            </form>
+
+            <div class="help-text">
+                <h3>Tips:</h3>
+                <ul>
+                    <li>Tags help you find images later using the search feature</li>
+                    <li>Use descriptive tags like family names, monument types, or time periods</li>
+                    <li>Tags are case-insensitive and will be normalized automatically</li>
+                </ul>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 StoneKeeper - Cemetery Photo Cataloging POC</p>
+        </footer>
+    </div>
+</body>
+</html>

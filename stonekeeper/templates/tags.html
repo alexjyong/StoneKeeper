@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tag Summary - StoneKeeper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>StoneKeeper</h1>
+            <p class="subtitle">Cemetery Photograph Cataloging</p>
+        </header>
+
+        <nav>
+            <a href="{{ url_for('upload') }}">Upload</a>
+            <a href="{{ url_for('search') }}">Search</a>
+            <a href="{{ url_for('tags') }}" class="active">Tag Summary</a>
+        </nav>
+
+        <main>
+            <h2>Tag Summary</h2>
+
+            {% if tag_summary and tag_summary|length > 0 %}
+                <p class="info-text">All unique tags with usage counts (sorted by most used):</p>
+
+                <div class="tag-summary-grid">
+                    {% for tag, count in tag_summary %}
+                        <div class="tag-summary-item">
+                            <a href="{{ url_for('search', tag=tag) }}" class="tag-link">
+                                <span class="tag-name">{{ tag }}</span>
+                                <span class="tag-count">{{ count }} image{{ 's' if count != 1 else '' }}</span>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="stats">
+                    <p><strong>Total unique tags:</strong> {{ tag_summary|length }}</p>
+                    <p><strong>Total images cataloged:</strong> {{ tag_summary|sum(attribute=1) }}</p>
+                </div>
+            {% else %}
+                <div class="message info">
+                    <p>No tags yet. <a href="{{ url_for('upload') }}">Upload some images</a> with tags to get started!</p>
+                </div>
+
+                <div class="help-text">
+                    <h3>About tags:</h3>
+                    <ul>
+                        <li>Tags help you categorize and search for images</li>
+                        <li>Add tags when uploading images on the <a href="{{ url_for('upload') }}">Upload</a> page</li>
+                        <li>Use descriptive tags like family names, monument types, or time periods</li>
+                        <li>This summary shows all unique tags and how many images use each tag</li>
+                    </ul>
+                </div>
+            {% endif %}
+        </main>
+
+        <footer>
+            <p>&copy; 2025 StoneKeeper - Cemetery Photo Cataloging POC</p>
+        </footer>
+    </div>
+</body>
+</html>
